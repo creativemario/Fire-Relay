@@ -1,4 +1,4 @@
-from picozero import DigitalOutputDevice, Button, DigitalLED
+from picozero import DigitalOutputDevice, Button, LED, pico_led
 from time import sleep_ms as sleep
 
 # Setup fire relay (1) on GPIO 18 (Connect fire to NO and 240v to COM).
@@ -15,7 +15,8 @@ FIRE_DURATION_MS = 3000
 LOCKOUT_DURATION_MS = 10000
 
 # setup the LED on GPIO 19 (this is a relay pin for testing, use a real LED on a different pin IRL).
-led = DigitalLED(19)
+led = LED(1)
+led.off()
 
 # global control for tracking LED state
 LED_BLINKING = False
@@ -29,6 +30,7 @@ def check_and_trigger_fire():
     global LED_BLINKING
     if I_CAN_HAS_FIRE:
         led.off()
+        pico_led.off()
         LED_BLINKING = False
         I_CAN_HAS_FIRE = False
         print("flame on")
@@ -43,7 +45,8 @@ def check_and_trigger_fire():
 while(True):
     # Blink LED if lockout disabled, and not already blinking
     if(I_CAN_HAS_FIRE and not LED_BLINKING):
-        led.blink()
+        led.pulse()
+        pico_led.blink()
         LED_BLINKING = True
     
     # if the button is being pressed and you are allowed to, do the fire
