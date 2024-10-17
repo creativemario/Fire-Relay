@@ -48,20 +48,30 @@ def check_and_trigger_fire():
 
 # Do the loop
 while(True):
-    # Blink LED if lockout disabled, and not already blinking
-    if(I_CAN_HAS_FIRE and not LED_BLINKING):
-        led.pulse()
-        pico_led.blink()
-        LED_BLINKING = True
-    
-    # if the button is being pressed and you are allowed to, do the fire
-    if(I_CAN_HAS_FIRE and button.is_pressed):
-        check_and_trigger_fire()
-    
-    # handle lockout
-    if(not I_CAN_HAS_FIRE):
-        lockoutduration = randint(MIN_LOCKOUT_DURATION_MS, MAX_LOCKOUT_DURATION_MS)
-        print("lockout for", lockoutduration, "ms")
-        sleep(lockoutduration)
-        print("enabling fire")
-        I_CAN_HAS_FIRE = True
+    try:
+        # Blink LED if lockout disabled, and not already blinking
+        if(I_CAN_HAS_FIRE and not LED_BLINKING):
+            led.pulse()
+            pico_led.blink()
+            LED_BLINKING = True
+        
+        # if the button is being pressed and you are allowed to, do the fire
+        if(I_CAN_HAS_FIRE and button.is_pressed):
+            check_and_trigger_fire()
+        
+        # handle lockout
+        if(not I_CAN_HAS_FIRE):
+            lockoutduration = randint(MIN_LOCKOUT_DURATION_MS, MAX_LOCKOUT_DURATION_MS)
+            print("lockout for", lockoutduration, "ms")
+            sleep(lockoutduration)
+            print("enabling fire")
+            I_CAN_HAS_FIRE = True
+    except Exception as e:
+        # handle bad things
+        fire.off()
+        led.off()
+        pico_led.off()
+        I_CAN_HAS_FIRE = False
+        print("a bad happened:", e)
+        print("waiting MAX LOCKOUT as precaution, ", MAX_LOCKOUT_DURATION_MS,"ms")
+        sleep(MAX_LOCKOUT_DURATION_MS)
