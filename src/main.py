@@ -1,5 +1,6 @@
 from picozero import DigitalOutputDevice, Button, LED, pico_led
 from time import sleep_ms as sleep
+from random import randint
 
 # Setup fire relay (1) on GPIO 18 (Connect fire to NO and 240v to COM).
 fire = DigitalOutputDevice(18)
@@ -9,10 +10,13 @@ fire.off()
 # global control for fire enable
 I_CAN_HAS_FIRE = False
 
-# global fire duration
-FIRE_DURATION_MS = 3000
-# global lockout duration
-LOCKOUT_DURATION_MS = 10000
+# global fire duration constraints
+MIN_FIRE_DURATION_MS = 1000
+MAX_FIRE_DURATION_MS = 3000
+
+# global lockout duration constraints
+MIN_LOCKOUT_DURATION_MS = 5000
+MAX_LOCKOUT_DURATION_MS = 10000
 
 # setup the LED on GPIO 19 (this is a relay pin for testing, use a real LED on a different pin IRL).
 led = LED(1)
@@ -35,8 +39,9 @@ def check_and_trigger_fire():
         I_CAN_HAS_FIRE = False
         print("flame on")
         fire.on()
-        print("waiting", FIRE_DURATION_MS, "ms")
-        sleep(FIRE_DURATION_MS)
+        fireduration = randint(MIN_FIRE_DURATION_MS, MAX_FIRE_DURATION_MS)
+        print("flaming for", fireduration, "ms")
+        sleep(fireduration)
         print("flame off")
         fire.off()
 
@@ -55,7 +60,8 @@ while(True):
     
     # handle lockout
     if(not I_CAN_HAS_FIRE):
-        print("lockout for", LOCKOUT_DURATION_MS, "ms")
-        sleep(LOCKOUT_DURATION_MS)
+        lockoutduration = randint(MIN_LOCKOUT_DURATION_MS, MAX_LOCKOUT_DURATION_MS)
+        print("lockout for", lockoutduration, "ms")
+        sleep(lockoutduration)
         print("enabling fire")
         I_CAN_HAS_FIRE = True
