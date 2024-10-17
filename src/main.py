@@ -2,7 +2,7 @@ from picozero import DigitalOutputDevice, Button, LED, pico_led
 from time import sleep_ms as sleep
 from random import randint
 
-# Setup fire relay (1) on GPIO 18 (Connect fire to NO and 240v to COM).
+# Setup fire relay (RELAY 1) on GPIO 18 (Connect fire to NO and 240v to COM on RELAY 1).
 fire = DigitalOutputDevice(18)
 # Turn off the fire
 fire.off()
@@ -18,7 +18,7 @@ MAX_FIRE_DURATION_MS = 3000
 MIN_LOCKOUT_DURATION_MS = 5000
 MAX_LOCKOUT_DURATION_MS = 10000
 
-# setup the LED on GPIO 19 (this is a relay pin for testing, use a real LED on a different pin IRL).
+# setup the LED on GPIO 1.
 led = LED(1)
 led.off()
 
